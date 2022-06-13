@@ -1,15 +1,13 @@
 <template>
   <div class="loginForm">
     <canvas class="wave"></canvas>
-    <el-form>
-
-    </el-form>
   </div>
 </template>
 
 <script setup lang="ts">
-  import { onMounted } from 'vue'
+  import { onMounted, onUnmounted } from 'vue'
 
+  let wave
   class Line {
     x: number
     y: number
@@ -31,12 +29,12 @@
 
       this.lightInputMultiplier = wave.opts.baseLightInputMultiplier + wave.opts.addedLightInputMultiplier * Math.random();
 
-      this.color = wave.opts.color.replace( 'hue', wave.tick * wave.opts.hueChange );
+      this.color = wave.opts.color.replace( 'hue', (wave.tick * wave.opts.hueChange).toString() );
       this.cumulativeTime = 0;
 
       this.beginPhase(wave);
     }
-    beginPhase(wave) {
+    beginPhase(wave: Wave) {
       this.x += this.addedX;
       this.y += this.addedY;
 
@@ -50,7 +48,7 @@
       if( Math.random() < wave.opts.dieChance || this.x > wave.dieX || this.x < -wave.dieX || this.y > wave.dieY || this.y < -wave.dieY )
         this.reset(wave);
     }
-    step(wave) {
+    step(wave: Wave) {
       ++this.time;
       ++this.cumulativeTime;
 
@@ -64,7 +62,7 @@
 
       wave.ctx.shadowBlur = prop * wave.opts.shadowToTimePropMult;
       wave.ctx.fillStyle = wave.ctx.shadowColor =
-        this.color.replace( 'light', wave.opts.baseLight + wave.opts.addedLight * Math.sin( this.cumulativeTime * this.lightInputMultiplier ) );
+        this.color.replace( 'light', (wave.opts.baseLight + wave.opts.addedLight * Math.sin( this.cumulativeTime * this.lightInputMultiplier )).toString() );
       wave.ctx.fillRect( wave.opts.cx + ( this.x + x ) * wave.opts.len, wave.opts.cy + ( this.y + y ) * wave.opts.len, 2, 2 );
 
       if( Math.random() < wave.opts.sparkChance )
@@ -75,7 +73,7 @@
           * wave.opts.len + Math.random() * wave.opts.sparkDist
           * ( Math.random() < .5 ? 1 : -1 ) - wave.opts.sparkSize / 2, wave.opts.sparkSize, wave.opts.sparkSize )
     }
-    reset(wave) {
+    reset(wave: Wave) {
       this.x = 0;
       this.y = 0;
       this.addedX = 0;
@@ -85,7 +83,7 @@
 
       this.lightInputMultiplier = wave.opts.baseLightInputMultiplier + wave.opts.addedLightInputMultiplier * Math.random();
 
-      this.color = wave.opts.color.replace( 'hue', wave.tick * wave.opts.hueChange );
+      this.color = wave.opts.color.replace( 'hue', (wave.tick * wave.opts.hueChange).toString() );
       this.cumulativeTime = 0;
 
       this.beginPhase(wave);
@@ -99,7 +97,7 @@
     h: number
     opts
     tick: number
-    lines: Array<Line>
+    private lines: Array<Line>
     dieX: number
     dieY: number
     baseRad: number
@@ -143,24 +141,34 @@
       this.loop()
     }
     loop() {
-      window.requestAnimationFrame( this.loop )
       ++this.tick;
 
       this.ctx.globalCompositeOperation = 'source-over';
       this.ctx.shadowBlur = 0;
-      this.ctx.fillStyle = 'rgba(0,0,0,alp)'.replace( 'alp', this.opts.repaintAlpha );
+      this.ctx.fillStyle = 'rgba(0,0,0,alp)'.replace( 'alp', this.opts.repaintAlpha.toString() );
       this.ctx.fillRect( 0, 0, this.w, this.h );
       this.ctx.globalCompositeOperation = 'lighter';
 
       if( this.lines.length < this.opts.count && Math.random() < this.opts.spawnChance )
         this.lines.push(new Line(this));
 
-        this.lines.map( function( line: Line ){ line.step(this); } );
-      }
+      this.lines.map(( line: Line ) => {
+        line.step(this);
+      } );
+      /**
+       * 在class中使用requestAnimationFrame
+       * 将this的指向用bind方法强制给指向到这个class
+       */
+      window.requestAnimationFrame(this.loop.bind(this))
+
+    }
   }
   onMounted(() => {
-    const wave = new Wave()
+    wave = new Wave()
     debugger
+  })
+  onUnmounted(() => {
+    // window.cancelAnimationTimeout()
   })
 
 </script>
