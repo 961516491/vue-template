@@ -37,7 +37,7 @@ export default defineConfig(({ command, mode }) => {
     resolve: {
       alias: {
         '@': resolve(__dirname, 'src'), // 设置 `@` 指向 `src` 目录
-        '#': resolve(__dirname, 'type')
+        '#': resolve(__dirname, 'types')
       }
     },
     css: {
