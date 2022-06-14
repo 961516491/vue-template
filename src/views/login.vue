@@ -1,11 +1,36 @@
 <template>
   <div class="loginForm">
     <canvas class="wave"></canvas>
+    <div class="photo">
+      <img :src="photo" alt="">
+    </div>
+    <el-form ref="loginForm" :model="formData">
+      <el-form-item>
+        <el-input v-model="formData.username" type="text" :prefix-icon="User" auto-complete="off" placeholder="账号" clearable></el-input>
+      </el-form-item>
+      <el-form-item>
+        <el-input
+          v-model="formData.password"
+          type="password"
+          auto-complete="off"
+          placeholder="密码"
+          :prefix-icon="Key"
+        ></el-input>
+      </el-form-item>
+      <el-form-item>
+
+      </el-form-item>
+    </el-form>
   </div>
 </template>
 
 <script setup lang="ts">
-  import { onMounted, onUnmounted } from 'vue'
+  import { reactive, onMounted, onUnmounted } from 'vue'
+  import { User, Key } from '@element-plus/icons-vue'
+
+  import logo from '@/assets/logo.png'
+
+  const photo = logo
 
   let wave
   class Line {
@@ -163,9 +188,15 @@
 
     }
   }
+
+  let formData = reactive({
+    username: undefined,
+    password: undefined,
+    code: undefined
+  })
+
   onMounted(() => {
     wave = new Wave()
-    debugger
   })
   onUnmounted(() => {
     // window.cancelAnimationTimeout()
@@ -183,9 +214,29 @@
     height: 50vh;
     box-shadow: 0 2px 30px rgb(0 0 0 / 20%);
     border-radius: 5px;
+    overflow: hidden;
     .wave {
       width: 100%;
       height: 20vh;
+    }
+    .photo {
+      width: 6vw;
+      height: 6vw;
+      border-radius: 50%;
+      box-shadow: 0 2px 30px rgb(0 0 0 / 20%);
+      position: absolute;
+      top: 25%;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 2px;
+      background-clip: content-box;
+      background-color: white;
+      overflow: hidden;
+      cursor: pointer;
+      img {
+        width: 100%;
+        height: 100%;
+      }
     }
   }
 </style>
