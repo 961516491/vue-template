@@ -1,7 +1,7 @@
 import axios from 'axios'
 import type { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios'
 import type { RequestConfig, RequestInterceptors } from '#/axios'
-import { getToken } from '../auth'
+import { getToken, setToken } from '../auth'
 
 class Axios {
   /**axios实例 */
@@ -13,10 +13,10 @@ class Axios {
     const env = import.meta.env
 
     /**修改axios默认配置 */
-    axios.defaults.baseURL = env.VITE_BASE_URL
+    axios.defaults.baseURL = env.VITE_BASE_API
     axios.defaults.withCredentials = true; // 允许跨域
     axios.defaults.headers.common['Content-Type'] = 'application/json;charset=utf-8'
-    axios.defaults.timeout = 1000
+    axios.defaults.timeout = 2000
 
     this.instance = axios.create(config)
 
@@ -24,10 +24,10 @@ class Axios {
 
     this.instance.interceptors.request.use(
       (res: AxiosRequestConfig) => {
-        // if (getToken()) {
-        //   // @ts-ignore
-        //   res.headers.common['Authorization'] = 'Bearer ' + getToken()
-        // }
+        if (getToken()) {
+          // @ts-ignore
+          res.headers.common['Authorization'] = 'Bearer ' + getToken()
+        }
         return res
       },
       (err: any) => err,
@@ -46,7 +46,11 @@ class Axios {
     this.instance.interceptors.response.use(
       // 因为我们接口的数据都在res.data下，所以我们直接返回res.data
       (res: AxiosResponse) => {
-        // console.log('全局响应拦截器')
+        // 如果有access_token直接放入
+        if (res.headers && res.headers.access_token) {
+          setToken(res.headers.access_token)
+        }
+        // 刷新token todo
         return res.data
       },
       (err: any) => err,

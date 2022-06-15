@@ -56,11 +56,11 @@ export default defineConfig(({ command, mode }) => {
 
       // 设置代理，根据我们项目实际情况配置
       proxy: {
-        [env.VITE_BASE_API]: {
+        '/dev-api': {
           target: env.VITE_BASE_URL,
           changeOrigin: true,
           secure: false,
-          rewrite: (path) => path.replace(env.VITE_BASE_API, '/')
+          rewrite: (path) => path.replace(env.VITE_BASE_API, '')
         }
       }
     }

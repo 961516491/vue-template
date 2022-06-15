@@ -3,14 +3,13 @@ import type { LoginForm } from '#/user'
 
 export function getCodeImg() {
   return request({
-    url: '/captchaImage',
-    method: 'get'
+    url: '/captcha'
   })
 }
 
 export function login(data: LoginForm) {
   return request({
-    url: '/login',
+    url: '/seed/sys/sign',
     method: 'post',
     data
   })

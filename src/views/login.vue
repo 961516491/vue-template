@@ -224,8 +224,8 @@
   const formData: LoginForm = reactive({
     username: '',
     password: '',
-    code: '',
-    uuid: ''
+    cvc: '',
+    code: ''
   })
   /**表单校验规则 */
   const rules = reactive<FormRules>({
@@ -258,20 +258,16 @@
   /**刷新验证码 */
   const refreshCode = () => {
     getCodeImg().then((res) => {
-      // @ts-ignore
-      codeImg.value = `data:image/gif;base64,${res.img}`
-      // @ts-ignore
-      formData.uuid = res.uuid
+      codeImg.value = res.data.captcha
+      formData.cvc = res.data.cvc
     })
   }
 
   onMounted(() => {
     wave = new Wave()
     getCodeImg().then((res) => {
-      // @ts-ignore
-      codeImg.value = `data:image/gif;base64,${res.img}`
-      // @ts-ignore
-      formData.uuid = res.uuid
+      codeImg.value = res.data.captcha
+      formData.cvc = res.data.cvc
     })
   })
   onUnmounted(() => {

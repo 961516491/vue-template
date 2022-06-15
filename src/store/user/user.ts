@@ -16,9 +16,7 @@ export const useUserStore = defineStore({
     Login(user: LoginForm) {
       return new Promise((resolve, reject) => {
         login(user).then(res => {
-          // @ts-ignore
-          this.token = res.token || ''
-          setToken(this.token)
+          /**todo 放置用户信息 */
           resolve(res)
         }).catch(error => {
           reject(error)
